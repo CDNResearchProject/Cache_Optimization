@@ -1,3 +1,5 @@
-# Demo
+# Optimization Project
 
-Some description about cache optimization
+This incorporates research problems for
+- Origin performance limitations
+- Optimize CDN elasticity for cost
