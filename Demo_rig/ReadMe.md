@@ -123,7 +123,7 @@ At this point it would be good to duplicate both *client* folders (in /nfs/ and 
 ```
 sudo rsync -xa --progress client/ client1
 ```
-This will make it very convenient when adding more client Raspberry Pis. The only hustle will be in editing *fstab*, *exports* and *cmdline.txt* with every additional client Raspberry Pi (client2, client3, etc.)
+This will make it very convenient when adding more client Raspberry Pis. The only thing to do will be in editing */nfs/client/etc/fstab*, */etc/exports* and */tftpboot/client/cmdline.txt* with every additional client Raspberry Pi (client2, client3, etc.)
 
 ---
 ## Booting up the client Raspberry Pi
@@ -132,7 +132,7 @@ The PC being used to SSH will be leased an IP by the server board. SSH back to t
 ```
 sudo tail -f /var/log/syslog
 ```
-Then plug in another Raspberry Pi (make sure there is no microSD in it). It will fail to boot. Ouch! Sorry to have wasted your time, all this was a prank! Hey, just joking. However the command that you executed will enable you to see the something like this
+Then plug in another Raspberry Pi (make sure there is no microSD in it). It will fail to boot. Ouch! No worries. However the command that you executed will enable you to see the something like this
 ```
 ...
 Dec 15 14:05:30 rpinetboot dnsmasq-tftp[511]: failed sending /tftpboot/f9c26df7/start.elf to 192.168.0.111
@@ -143,4 +143,94 @@ Copy only that f9c26df7 which is a serial number of the client board you just tr
 cd /tftpboot
 sudo ln -s client1 f9c26df7
 ```
+In the /nfs/client1/etc/fstab edit as follows:
+```
+proc       /proc        proc     defaults    0    0
+192.168.0.11:/tftpboot/client1 /boot nfs defaults,vers=3 0 0
+tmpfs /tmp tmpfs defaults,noatime,nosuid 0 0
+tmpfs /var/log tmpfs defaults,noatime,nosuid,size=16m 0 0
+```
+
+
+In the /tftpboot/client1/cmdline.txt edit as follows:
+```
+console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/nfs/client1,vers=3 rw ip=dhcp rootwait elevator=deadline
+```
+And in the /etc/exports edit as follows:
+```
+/nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
+/tftpboot *(rw,sync,no_subtree_check,no_root_squash)
+```
+As you can see, what we did is only to add the number in front of 'client' (client1).
+
 What remains is to restart the client Raspberry Pi (remove from power and power it back on, if you have a spare monitor, plug that to the client board), and Voila!
+
+---
+## Adding another client to the rig
+---
+At this point duplicate both client folders (in /nfs/ and /tftpboot/) as mentioned earlier with rsync as follows
+```
+cd /nfs
+sudo rsync -xa --progress client/ client2
+cd /tftpboot
+sudo rsync -xa --progress client/ client2
+```
+Repeat what was done in the previous section (*Booting up the client Raspberry Pi*), and you will note that you will only edit the same mentioned files from 'client' to 'client2'.
+This process repeats for every additional client added
+
+---
+## Connecting to the outside world via the Server
+---
+This setup is if we want to connect to the internet via the server with its WiFi interace. With our setup using Raspbian Lite, you will see this message "Wi-Fi is currently blocked by rfkill". To unblock do the following on your server's terminal:
+```
+rfkill list
+rfkill unblock 0
+```
+In our case identifier of device was 0 (zero).
+
+Then edit /etc/wpa_supplicant/wpa_supplicant.conf by appending this configuration below:
+```
+network={
+    ssid="Your Network SSID"
+    psk="Your WiFi Password"
+}
+```
+Then edit /etc/sysctl.conf file by uncommenting the line:
+```
+net.ipv4.ip_forward=1
+```
+Then we configure iptables as follows:
+```
+apt install iptables
+sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
+```
+Then in /etc/rc.local file, add a line to load the tables on boot:
+```
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+iptables-restore < /etc/iptables.ipv4.nat
+
+exit 0
+```
+Remember to comment these lines in /etc/dnsmasq.conf:
+```
+dhcp-option=3,192.168.0.1
+dhcp-option=6,8.8.8.8,8.8.4.4
+```
+Then reboot. Would be good to reboot also the clients.
+
+---
+## Attaching an LCD Screen (2.8 inch LCD, 320x240 Raspberry Pi)
+---
+Attach the LCD screen to a client Raspberry Pi then follow the instructions provided by the LCD screen installation [documentation](https://www.waveshare.com/wiki/2.8inch_RPi_LCD_(A)) provided by Waveshare.
+After the installation, edit the /tftpboot/client(x)/cmdline.txt file with the following configuration:
+```
+console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/hdd/nfs/client1,vers=3 rw ip=dhcp rootwait elevator=deadline fsck.repair=yes quiet splash fbcon=map:10 fbcon=font:ProFont6x11
+```
+Then power off and back on the client Raspberry Pi. By now, your LCD screen will display a log in prompt, perhaps with the IP address assigned to the client.
