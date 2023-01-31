@@ -181,7 +181,7 @@ This process repeats for every additional client added
 ---
 ## Connecting to the outside world via the Server
 ---
-This setup is if we want to connect to the internet via the server with its WiFi interace. With our setup using Raspbian Lite, you will see this message "Wi-Fi is currently blocked by rfkill". To unblock do the following on your server's terminal:
+This setup is if we want to connect to the internet via the server with its WiFi interface. With our setup using Raspbian Lite, you will see this message "Wi-Fi is currently blocked by rfkill". To unblock do the following on your server's terminal:
 ```
 rfkill list
 rfkill unblock 0
