@@ -231,6 +231,6 @@ Then reboot. Would be good to reboot also the clients.
 Attach the LCD screen to a client Raspberry Pi then follow the instructions provided by the LCD screen installation [documentation](https://www.waveshare.com/wiki/2.8inch_RPi_LCD_(A)) provided by Waveshare.
 After the installation, edit the /tftpboot/client(x)/cmdline.txt file with the following configuration:
 ```
-console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/hdd/nfs/client1,vers=3 rw ip=dhcp rootwait elevator=deadline fsck.repair=yes quiet splash fbcon=map:10 fbcon=font:ProFont6x11
+console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/nfs/client1,vers=3 rw ip=dhcp rootwait elevator=deadline fsck.repair=yes quiet splash fbcon=map:10 fbcon=font:ProFont6x11
 ```
 Then power off and back on the client Raspberry Pi. By now, your LCD screen will display a log in prompt, perhaps with the IP address assigned to the client.
