@@ -176,7 +176,7 @@ cd /tftpboot
 sudo rsync -xa --progress client/ client2
 ```
 Repeat what was done in the previous section (*Booting up the client Raspberry Pi*), and you will note that you will only edit the same mentioned files from 'client' to 'client2'.
-This process repeats for every additional client added
+This process repeats for every additional client added.
 
 ---
 ## Connecting to the outside world via the Server
