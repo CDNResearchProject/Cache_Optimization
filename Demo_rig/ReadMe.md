@@ -235,4 +235,4 @@ console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/nfs/clie
 ```
 Then power off and back on the client Raspberry Pi. By now, your LCD screen will display a log in prompt, perhaps with the IP address assigned to the client.
 
-Minor update: It is wise to edit 'cmdline.txt' file in the '~/LCD-show' directory just before launching '~/LCD-show/LCD28-show-V2 lite'.
+Minor update: It is wise to edit 'cmdline.txt' file in the 'LCD-show' directory just before launching './LCD28-show-V2 lite'.
