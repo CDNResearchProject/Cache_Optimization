@@ -1,7 +1,7 @@
 # Demo rig setup and configurations
 In this file, we are going to describe how to set up the CDN Demo rig and share the configuration files
 
-# **PXE Boot Setup for Raspberry Pi 3 Model B+**
+# **PXE Boot Setup for Raspberry Pi 3 Model B+/4 Model B**
 This document covers all the steps on how to network boot Raspberry Pi 3B+.
 It is assumed you have a working private LAN that also has access to the internet. For LAN as an example we will use 192.168.0.0/24 network
 
@@ -9,6 +9,16 @@ It is assumed you have a working private LAN that also has access to the interne
 ## Prepare the client board
 ---
 The Raspberry Pi 3B+ comes from the factory already set for network booting
+
+For the Raspberry Pi 4 Model B; boot the RPi with Raspberry Pi OS (Raspbian), and in the terminal enter this command:
+```
+sudo raspi-config
+```
+In the screen that pops up, go to Advanced options to change the boot order into Network Boot. Save the changes and reboot the RPi4 to go back to the terminal and check if the boot order has changed by using this command:
+```
+vcgencmd bootloader_config
+```
+
 
 ---
 ## Prepare the server board
