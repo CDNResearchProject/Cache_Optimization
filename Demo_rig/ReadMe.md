@@ -246,3 +246,5 @@ console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/nfs/clie
 Then power off and back on the client Raspberry Pi. By now, your LCD screen will display a log in prompt, perhaps with the IP address assigned to the client.
 
 Minor update: It is wise to edit 'cmdline.txt' file in the 'LCD-show' directory just before launching/executing './LCD28-show-V2 lite'.
+
+I used this [GitHub repository](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) as a guide to make this document.
