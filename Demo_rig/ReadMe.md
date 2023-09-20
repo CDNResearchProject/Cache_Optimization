@@ -247,4 +247,8 @@ Then power off and back on the client Raspberry Pi. By now, your LCD screen will
 
 Minor update: It is wise to edit 'cmdline.txt' file in the 'LCD-show' directory just before launching/executing './LCD28-show-V2 lite'.
 
-I used this [GitHub repository](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) as a guide to make this document.
+---
+## Sources and References
+---
+- [GitHub](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) for network booting RPI4.
+- [Linuxhit]() for Raspberry Pi PXE Boot.
