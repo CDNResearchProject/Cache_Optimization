@@ -251,5 +251,5 @@ Minor update: It is wise to edit 'cmdline.txt' file in the 'LCD-show' directory 
 ---
 ## Sources and References
 ---
-- [GitHub](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) for network booting RPI4.
+- [GitHub](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) for network booting RPI4 by GaryExplains.
 - [Linuxhit](https://linuxhit.com/raspberry-pi-pxe-boot-netbooting-a-pi-4-without-an-sd-card/) for Raspberry Pi PXE Boot.
