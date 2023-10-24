@@ -1,7 +1,7 @@
 # Demo rig setup and configurations
 In this file, we are going to describe how to set up the CDN Demo rig and share the configuration files
 
-# **PXE Boot Setup for Raspberry Pi 3 Model B+**
+# **PXE Boot Setup for Raspberry Pi 3 Model B+/Pi 4 Model B**
 This document covers all the steps on how to network boot Raspberry Pi 3B+.
 It is assumed you have a working private LAN that also has access to the internet. For LAN as an example we will use 192.168.0.0/24 network
 
@@ -9,6 +9,16 @@ It is assumed you have a working private LAN that also has access to the interne
 ## Prepare the client board
 ---
 The Raspberry Pi 3B+ comes from the factory already set for network booting
+
+For the Raspberry Pi 4 Model B; boot the RPi with Raspberry Pi OS (Raspbian), and in the terminal enter this command:
+```
+sudo raspi-config
+```
+In the screen that pops up, go to Advanced options to change the boot order into Network Boot. Save the changes and reboot the RPi4 to go back to the terminal and check if the boot order has changed by using this command:
+```
+vcgencmd bootloader_config
+```
+Where the output should be this: BOOT_ORDER=0xf21
 
 ---
 ## Prepare the server board
@@ -83,8 +93,9 @@ log-dhcp
 enable-tftp
 tftp-root=/tftpboot
 pxe-service=0,"Raspberry Pi Boot"
-dhcp-option=3,192.168.0.1
+dhcp-option=3,192.168.0.2
 dhcp-option=6,8.8.8.8,8.8.4.4
+dhcp-option=121,192.168.100.0/24,192.168.0.1
 ```
 Configure the cmdline.txt file for the client
 ```
@@ -101,7 +112,7 @@ Edit the dhcpcd file (/etc/dhcpcd.conf) and put the following configurations. Ag
 ```
 interface eth0
 static ip_address=192.168.0.11/24
-static routers=192.168.0.1
+static routers=192.168.0.2
 static domain_name_servers=8.8.8.8 8.8.4.4
 ```
 Remember to change `192.168.0.11` to fit your network setup
@@ -132,7 +143,7 @@ The PC being used to SSH will be leased an IP by the server board. SSH back to t
 ```
 sudo tail -f /var/log/syslog
 ```
-Then plug in another Raspberry Pi (make sure there is no microSD in it). It will fail to boot. Ouch! No worries. However the command that you executed will enable you to see the something like this
+Then plug in another Raspberry Pi (make sure there is no microSD in it). It will fail to boot. No worries. However the command that you executed will enable you to see the something like this
 ```
 ...
 Dec 15 14:05:30 rpinetboot dnsmasq-tftp[511]: failed sending /tftpboot/f9c26df7/start.elf to 192.168.0.111
@@ -161,7 +172,7 @@ And in the /etc/exports edit as follows:
 /nfs/client1 *(rw,sync,no_subtree_check,no_root_squash)
 /tftpboot *(rw,sync,no_subtree_check,no_root_squash)
 ```
-As you can see, what we did is only to add the number in front of 'client' (client1).
+Added the number in front of 'client' (client1).
 
 What remains is to restart the client Raspberry Pi (remove from power and power it back on, if you have a spare monitor, plug that to the client board), and Voila!
 
@@ -226,13 +237,5 @@ dhcp-option=6,8.8.8.8,8.8.4.4
 Then reboot. Would be good to reboot also the clients.
 
 ---
-## Attaching an LCD Screen (2.8 inch LCD, 320x240 Raspberry Pi)
----
-Attach the LCD screen to a client Raspberry Pi then follow the instructions provided by the LCD screen installation [documentation](https://www.waveshare.com/wiki/2.8inch_RPi_LCD_(A)) provided by Waveshare.
-After the installation, edit the /tftpboot/client(x)/cmdline.txt file with the following configuration:
-```
-console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.0.11:/nfs/client1,vers=3 rw ip=dhcp rootwait elevator=deadline fsck.repair=yes quiet splash fbcon=map:10 fbcon=font:ProFont6x11
-```
-Then power off and back on the client Raspberry Pi. By now, your LCD screen will display a log in prompt, perhaps with the IP address assigned to the client.
-
-Minor update: It is wise to edit 'cmdline.txt' file in the 'LCD-show' directory just before launching/executing './LCD28-show-V2 lite'.
+- [GitHub](https://github.com/garyexplains/examples/blob/master/How%20to%20network%20boot%20a%20Pi%204.md) for network booting RPI4 by GaryExplains.
+- [Linuxhit](https://linuxhit.com/raspberry-pi-pxe-boot-netbooting-a-pi-4-without-an-sd-card/) for Raspberry Pi PXE Boot.
